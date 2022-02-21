@@ -1,7 +1,6 @@
 package api
 
 import (
-	db "github.com/eminmuhammadi/memorydb/db"
 	model "github.com/eminmuhammadi/memorydb/model"
 	uuid "github.com/satori/go.uuid"
 	"gorm.io/gorm"
@@ -12,15 +11,8 @@ type UserView struct {
 	Name string    `json:"name"`
 }
 
-var sql *gorm.DB = db.Init()
-
 // Create User
-func CreateUser(name string) UserView {
-	// Create new user
-	user := model.User{
-		Name: name,
-	}
-
+func CreateUser(sql *gorm.DB, user *model.User) UserView {
 	// Save user to database
 	if error := sql.Create(&user).Error; error != nil {
 		panic(error)
@@ -38,7 +30,7 @@ func CreateUser(name string) UserView {
 }
 
 // List all users
-func AllUsers() []UserView {
+func GetAllUsers(sql *gorm.DB) []UserView {
 	// Get all users from database
 	var users []model.User
 	if error := sql.Find(&users).Error; error != nil {

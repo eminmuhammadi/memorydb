@@ -1,13 +1,14 @@
 package api
 
 import (
-	"github.com/eminmuhammadi/memorydb/model"
+	model "github.com/eminmuhammadi/memorydb/model"
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 )
 
-func CreateRoutes(server *fiber.App) {
+func CreateRoutes(server *fiber.App, sql *gorm.DB) {
 	server.Get("/users", func(ctx *fiber.Ctx) error {
-		return ctx.JSON(AllUsers())
+		return ctx.JSON(GetAllUsers(sql))
 	})
 
 	server.Post("/users", func(ctx *fiber.Ctx) error {
@@ -21,6 +22,6 @@ func CreateRoutes(server *fiber.App) {
 			return ctx.Status(400).SendString("Name is required")
 		}
 
-		return ctx.JSON(CreateUser(user.Name))
+		return ctx.JSON(CreateUser(sql, user))
 	})
 }

@@ -6,9 +6,19 @@ import (
 	app "github.com/eminmuhammadi/memorydb/api"
 	middleware "github.com/eminmuhammadi/memorydb/api/middleware"
 	config "github.com/eminmuhammadi/memorydb/config"
+	db "github.com/eminmuhammadi/memorydb/db"
+	"gorm.io/gorm"
 )
 
 func main() {
+	// In memory database
+	var sql *gorm.DB = db.Init()
+
+	// Migrate database
+	if err := db.Migrate(sql); err != nil {
+		panic(err)
+	}
+
 	// Create server
 	server := app.CreateServer()
 
@@ -22,12 +32,12 @@ func main() {
 	middleware.EnableLogger(server)
 
 	// Create routes
-	app.CreateRoutes(server)
+	app.CreateRoutes(server, sql)
 
 	// Listen and serve on
-	error := app.StartServer(server, config.HOST, config.PORT)
-
-	if error != nil {
+	if error := app.StartServer(server, config.HOST, config.PORT); error != nil {
 		log.Panic(error)
 	}
+
+	defer db.Close(sql)
 }

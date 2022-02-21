@@ -38,11 +38,6 @@ func Init() *gorm.DB {
 		panic(err)
 	}
 
-	// Migrate database
-	if err := Migrate(db); err != nil {
-		panic(err)
-	}
-
 	return db
 }
 
