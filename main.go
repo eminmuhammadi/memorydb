@@ -1,43 +1,31 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
-	app "github.com/eminmuhammadi/memorydb/api"
-	middleware "github.com/eminmuhammadi/memorydb/api/middleware"
 	config "github.com/eminmuhammadi/memorydb/config"
 	db "github.com/eminmuhammadi/memorydb/db"
-	"gorm.io/gorm"
+	model "github.com/eminmuhammadi/memorydb/model"
+	view "github.com/eminmuhammadi/memorydb/view"
 )
 
 func main() {
-	// In memory database
-	var sql *gorm.DB = db.Init()
+	// App structure
+	server := &config.MainArchitecture{
+		DB: db.Init(),
+	}
 
 	// Migrate database
-	if err := db.Migrate(sql); err != nil {
+	if err := db.Migrate(server.DB); err != nil {
 		panic(err)
 	}
 
-	// Create server
-	server := app.CreateServer()
+	view.CreateUser(server.DB, &model.User{
+		Name: "John Doe",
+	})
 
-	// Middlewares
-	middleware.EnableRequestID(server)
-	middleware.EnableCors(server)
-	middleware.EnableRecover(server)
-	middleware.EnableEtag(server)
-	middleware.EnableCompress(server)
-	middleware.EnableRateLimit(server)
-	middleware.EnableLogger(server)
+	users := view.GetAllUsers(server.DB)
+	fmt.Println(users)
 
-	// Create routes
-	app.CreateRoutes(server, sql)
-
-	// Listen and serve on
-	if error := app.StartServer(server, config.HOST, config.PORT); error != nil {
-		log.Panic(error)
-	}
-
-	defer db.Close(sql)
+	defer db.Close(server.DB)
 }

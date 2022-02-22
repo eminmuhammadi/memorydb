@@ -1,4 +1,4 @@
-package api
+package view
 
 import (
 	model "github.com/eminmuhammadi/memorydb/model"
@@ -32,18 +32,18 @@ func CreateUser(sql *gorm.DB, user *model.User) UserView {
 // List all users
 func GetAllUsers(sql *gorm.DB) []UserView {
 	// Get all users from database
-	var users []model.User
-	if error := sql.Find(&users).Error; error != nil {
+	var userModel []model.User
+	if error := sql.Find(&userModel).Error; error != nil {
 		panic(error)
 	}
 
-	var usersView []UserView
-	for _, user := range users {
-		usersView = append(usersView, UserView{
+	var users []UserView
+	for _, user := range userModel {
+		users = append(users, UserView{
 			ID:   user.ID,
 			Name: user.Name,
 		})
 	}
 
-	return usersView
+	return users
 }

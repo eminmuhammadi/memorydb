@@ -19,7 +19,7 @@ var DSN string = fmt.Sprintf(":memory:?cache=%s&mode%s",
 // Create database connection
 func Create() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(DSN), &gorm.Config{
-		Logger:                 logger.Default.LogMode(logger.Info),
+		Logger:                 logger.Default.LogMode(logger.Warn),
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
 		NowFunc: func() time.Time {
