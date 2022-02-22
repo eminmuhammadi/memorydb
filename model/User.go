@@ -17,7 +17,7 @@ type User struct {
 
 // Before first time creation
 func (user *User) BeforeCreate(tx *gorm.DB) error {
-	currentTime := date.Now(config.TimeZone)
+	currentTime := date.Now(config.GetConfig().TimeZone)
 
 	// Set UUID for ID
 	user.ID = uuid.NewV4()
@@ -31,7 +31,7 @@ func (user *User) BeforeCreate(tx *gorm.DB) error {
 
 // Before update
 func (user *User) BeforeUpdate(tx *gorm.DB) error {
-	currentTime := date.Now(config.TimeZone)
+	currentTime := date.Now(config.GetConfig().TimeZone)
 
 	// Update timestamp for updated_at
 	user.UpdatedAt = currentTime
@@ -41,7 +41,7 @@ func (user *User) BeforeUpdate(tx *gorm.DB) error {
 
 // Before delete
 func (user *User) BeforeDelete(tx *gorm.DB) error {
-	currentTime := date.Now(config.TimeZone)
+	currentTime := date.Now(config.GetConfig().TimeZone)
 
 	// Set timestamp for deleted_at
 	user.DeletedAt.Time = currentTime

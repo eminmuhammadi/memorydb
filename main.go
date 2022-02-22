@@ -1,21 +1,16 @@
 package main
 
 import (
-	"flag"
-
+	config "github.com/eminmuhammadi/memorydb/config"
 	db "github.com/eminmuhammadi/memorydb/db"
 	tcp "github.com/eminmuhammadi/memorydb/tcp"
 )
 
-var ip = flag.String("ip", "0.0.0.0", "--ip 0.0.0.0")
-var port = flag.String("port", "8080", "--port 8080")
-var timezone = flag.String("tz", "", "--tz \"Asia/Baku\"")
+var conf = config.GetConfig()
 
 func main() {
-	flag.Parse()
-
 	// App structure
-	sql := db.Init(*timezone)
+	sql := db.Init(*&conf.TimeZone)
 
 	// Migrate database
 	if err := db.Migrate(sql); err != nil {
@@ -23,7 +18,7 @@ func main() {
 	}
 
 	// Start TCP server
-	tcp.Start(*ip, *port, sql)
+	tcp.Start(*&conf.IP, *&conf.PORT, sql)
 
 	defer db.Close(sql)
 }
