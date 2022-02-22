@@ -1,31 +1,29 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 
-	config "github.com/eminmuhammadi/memorydb/config"
 	db "github.com/eminmuhammadi/memorydb/db"
-	model "github.com/eminmuhammadi/memorydb/model"
-	view "github.com/eminmuhammadi/memorydb/view"
+	tcp "github.com/eminmuhammadi/memorydb/tcp"
 )
 
+var ip = flag.String("ip", "0.0.0.0", "--ip 0.0.0.0")
+var port = flag.String("port", "8080", "--port 8080")
+var timezone = flag.String("tz", "", "--tz \"Asia/Baku\"")
+
 func main() {
+	flag.Parse()
+
 	// App structure
-	server := &config.MainArchitecture{
-		DB: db.Init(),
-	}
+	sql := db.Init(*timezone)
 
 	// Migrate database
-	if err := db.Migrate(server.DB); err != nil {
+	if err := db.Migrate(sql); err != nil {
 		panic(err)
 	}
 
-	view.CreateUser(server.DB, &model.User{
-		Name: "John Doe",
-	})
+	// Start TCP server
+	tcp.Start(*ip, *port, sql)
 
-	users := view.GetAllUsers(server.DB)
-	fmt.Println(users)
-
-	defer db.Close(server.DB)
+	defer db.Close(sql)
 }

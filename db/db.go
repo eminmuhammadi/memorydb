@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	config "github.com/eminmuhammadi/memorydb/config"
 	date "github.com/eminmuhammadi/memorydb/date"
 	sqlite "gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -17,13 +16,14 @@ var DSN string = fmt.Sprintf(":memory:?cache=%s&mode%s",
 )
 
 // Create database connection
-func Create() (*gorm.DB, error) {
+func Create(timezone string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(DSN), &gorm.Config{
 		Logger:                 logger.Default.LogMode(logger.Warn),
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
+		QueryFields:            true,
 		NowFunc: func() time.Time {
-			return date.Now(config.TimeZone)
+			return date.Now(timezone)
 		},
 	})
 
@@ -31,8 +31,8 @@ func Create() (*gorm.DB, error) {
 }
 
 // Intialize database in memory
-func Init() *gorm.DB {
-	db, err := Create()
+func Init(timezone string) *gorm.DB {
+	db, err := Create(timezone)
 
 	if err != nil {
 		panic(err)

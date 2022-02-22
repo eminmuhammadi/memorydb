@@ -4,5 +4,5 @@ package config
 const TimeZone = "CET"
 
 // HTTP (API)
-const HOST = "0.0.0.0"
+const IP = "127.0.0.1"
 const PORT = "8080"
